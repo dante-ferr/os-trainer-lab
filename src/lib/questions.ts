@@ -128,7 +128,7 @@ export function generateQuestion(topic: Topic, secondarySubject: string = subjec
   const meta = { id, title: `${secondarySubject} · ${String(index).padStart(2, '0')}`, topic, index };
   if (topic === 'scheduling') {
     const algorithm = secondarySubject as Algorithm;
-    const config = { algorithm, quantum: 2, overhead: 1, processes: Array.from({ length: 4 }, (_, i) => ({ id: String.fromCharCode(65 + i), arrival: i === 0 ? 0 : randomInt(1, 8), duration: randomInt(2, 6), deadline: randomInt(10, 36) })) };
+    const config = { algorithm, quantum: randomInt(2, 5), overhead: randomInt(1, 4), processes: Array.from({ length: 4 }, (_, i) => ({ id: String.fromCharCode(65 + i), arrival: i === 0 ? 0 : randomInt(1, 8), duration: randomInt(2, 6), deadline: randomInt(10, 36) })) };
     return { meta, scheduling: { config, solution: schedule(config) } };
   }
   if (topic === 'paging') {
