@@ -26,7 +26,8 @@ export function schedule(config: SchedulingConfig) {
     if (time > 1000) throw new Error('Scheduling horizon exceeds 1,000 ticks');
     enqueue();
     const expired = current >= 0 && (algorithm === 'RR' || algorithm === 'EDF') && slice >= quantum;
-    const priority = current >= 0 && (algorithm === 'EDF' || algorithm === 'SRTF') && queue.some(i => rank(i) < rank(current));
+    // EDF waits for the quantum. Only SRTF yields immediately to a higher priority.
+    const priority = current >= 0 && algorithm === 'SRTF' && queue.some(i => rank(i) < rank(current));
     if (expired || priority) {
       const outgoing = current;
       // A quantum expiration costs overhead even if the same process resumes.

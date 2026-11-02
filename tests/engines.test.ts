@@ -17,10 +17,11 @@ test('RR charges outgoing overhead, admits arrivals during overhead, then rotate
   assert.deepEqual(s.timeline.A, ['■', '■', 'X', '•', '■']);
   assert.deepEqual(s.timeline.B, ['', '', '•', '■', '']);
 });
-test('EDF preempts on earlier arrival-adjusted due time, and slices even a lone process', () => {
+test('EDF finishes the quantum before an earlier deadline runs, and slices even a lone process', () => {
   const s = schedule({ algorithm: 'EDF', quantum: 2, overhead: 1, processes: [process('A', 0, 3, 20), process('B', 1, 1, 10)] });
-  assert.deepEqual(s.timeline.A, ['■', 'X', '•', '■', '■']);
-  assert.deepEqual(s.timeline.B, ['', '•', '■', '', '']);
+  assert.deepEqual(s.timeline.A, ['■', '■', 'X', '•', '■']);
+  assert.deepEqual(s.timeline.B, ['', '•', '•', '■', '']);
+  assert.deepEqual(s.response_times, { A: 5, B: 3, mean: 4 });
   const lone = schedule({ algorithm: 'EDF', quantum: 2, overhead: 1, processes: [process('A', 0, 3)] });
   assert.deepEqual(lone.timeline.A, ['■', '■', 'X', '■']);
 });
@@ -107,13 +108,14 @@ test('equal arrival-adjusted due times do not trigger priority preemption', () =
   assert.deepEqual(s.timeline.B, ['', '•', '•', '•', '■']);
 });
 
-test('an actually earlier arrival-adjusted due time preempts before quantum expiration', () => {
+test('an earlier arrival-adjusted due time waits until the current quantum ends', () => {
   const s = schedule({
-    algorithm: 'EDF', quantum: 10, overhead: 1, processes: [
-      process('A', 0, 4, 8),
-      process('B', 2, 1, 3), // Due at 5, earlier than A at 8.
+    algorithm: 'EDF', quantum: 4, overhead: 1, processes: [
+      process('A', 0, 6, 20), // Due at 20.
+      process('B', 1, 1, 5), // Due at 6, but A keeps the CPU for the full quantum.
     ]
   });
-  assert.deepEqual(s.timeline.A, ['■', '■', 'X', '•', '■', '■']);
-  assert.deepEqual(s.timeline.B, ['', '', '•', '■', '', '']);
+  assert.deepEqual(s.timeline.A, ['■', '■', '■', '■', 'X', '•', '■', '■']);
+  assert.deepEqual(s.timeline.B, ['', '•', '•', '•', '•', '■', '', '']);
+  assert.deepEqual(s.response_times, { A: 8, B: 5, mean: 6.5 });
 });

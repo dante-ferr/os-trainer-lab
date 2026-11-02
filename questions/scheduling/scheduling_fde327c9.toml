@@ -1,0 +1,18 @@
+[meta]
+id = "scheduling_fde327c9"
+title = "EDF · 04"
+topic = "scheduling"
+index = 4
+
+[scheduling.config]
+algorithm = "EDF"
+quantum = 4
+overhead = 1
+processes = [{ "id" = "A", "arrival" = 0, "duration" = 3, "deadline" = 16 }, { "id" = "B", "arrival" = 6, "duration" = 5, "deadline" = 23 }, { "id" = "C", "arrival" = 7, "duration" = 5, "deadline" = 18 }, { "id" = "D", "arrival" = 4, "duration" = 5, "deadline" = 26 }]
+
+[scheduling.solution]
+timeline = { "A" = ["■", "■", "■", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""], "B" = ["", "", "", "", "", "", "•", "•", "•", "•", "•", "•", "•", "•", "•", "■", "■", "■", "■", "X", "■", ""], "C" = ["", "", "", "", "", "", "", "•", "•", "■", "■", "■", "■", "X", "■", "", "", "", "", "", "", ""], "D" = ["", "", "", "", "■", "■", "■", "■", "X", "•", "•", "•", "•", "•", "•", "•", "•", "•", "•", "•", "•", "■"] }
+response_times = { "A" = 3, "C" = 8, "B" = 15, "D" = 18, "mean" = 11 }
+
+[attempt]
+answers = { "cell.A.0" = "■", "cell.A.1" = "■", "cell.A.2" = "■", "cell.D.4" = "■", "cell.D.5" = "■", "cell.D.6" = "X", "cell.D.7" = "•", "cell.B.6" = "•", "cell.C.7" = "■", "cell.B.7" = "•", "cell.B.8" = "•", "cell.C.8" = "■", "cell.D.8" = "•", "cell.C.9" = "■", "cell.C.10" = "■", "cell.C.11" = "X", "cell.C.12" = "■", "cell.B.9" = "•", "cell.B.10" = "•", "cell.B.11" = "•", "cell.B.12" = "•", "cell.C.13" = "", "cell.B.13" = "■", "cell.B.14" = "■", "cell.B.15" = "■", "cell.B.16" = "■", "cell.B.17" = "X", "cell.B.18" = "■", "cell.B.19" = "", "cell.D.20" = "■", "cell.D.21" = "■", "cell.D.9" = "•", "cell.D.10" = "•", "cell.D.11" = "•", "cell.D.13" = "•", "cell.D.12" = "•", "cell.D.14" = "•", "cell.D.15" = "•", "cell.D.16" = "•", "cell.D.17" = "•", "cell.D.18" = "•", "cell.D.19" = "■" }
