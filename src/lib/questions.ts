@@ -132,8 +132,19 @@ export function generateQuestion(topic: Topic, secondarySubject: string = subjec
     return { meta, scheduling: { config, solution: schedule(config) } };
   }
   if (topic === 'paging') {
+    // Frames = 2^PFN. Use 2–3 PFN bits so physical frames stay in {4, 8} (within 4–12).
     const offset_bits = randomInt(8, 13);
-    const config = { virtual_bits: offset_bits + randomInt(4, 9), physical_bits: offset_bits + randomInt(1, 4), offset_bits, replacement: secondarySubject as 'FIFO' | 'LRU', references: Array.from({ length: 14 }, () => randomInt(7)) };
+    const vpn_bits = randomInt(4, 9);
+    const pfn_bits = randomInt(2, 4);
+    const frame_count = 2 ** pfn_bits;
+    const page_span = Math.min(2 ** vpn_bits, randomInt(frame_count + 2, frame_count + 7));
+    const config = {
+      virtual_bits: offset_bits + vpn_bits,
+      physical_bits: offset_bits + pfn_bits,
+      offset_bits,
+      replacement: secondarySubject as 'FIFO' | 'LRU',
+      references: Array.from({ length: randomInt(12, 21) }, () => randomInt(page_span)),
+    };
     return { meta, paging: { config, solution: page(config) } };
   }
   const config = { algorithm: secondarySubject as Fit, blocks: Array.from({ length: 5 }, () => randomInt(8, 31) * 16), requests: Array.from({ length: 6 }, () => randomInt(3, 22) * 16) };
