@@ -47,7 +47,7 @@ export function schedule(config: SchedulingConfig) {
 }
 
 /** Demand paging starts empty; lowest free frame first, then FIFO or LRU.
- * Snapshots after every reference feed the frames and page-table history grids. */
+ * Histories append only when a value changes; the last entry is the current one. */
 export function page(config: PagingConfig) {
   const frame_count = 2 ** (config.physical_bits - config.offset_bits);
   const frames: (number | null)[] = Array(frame_count).fill(null);
@@ -63,12 +63,14 @@ export function page(config: PagingConfig) {
       if (frame < 0) {
         const clock = config.replacement === 'FIFO' ? loaded : used;
         frame = frames.reduce((best: number, p, i) => clock.get(p!)! < clock.get(frames[best]!)! ? i : best, 0);
+        page_history[String(frames[frame]!)].push(-1);
       }
-      frames[frame] = vpn; loaded.set(vpn, time);
+      frames[frame] = vpn;
+      loaded.set(vpn, time);
+      frames_history[frame].push(vpn);
+      page_history[String(vpn)].push(frame);
     }
     used.set(vpn, time);
-    frames.forEach((resident, frame) => frames_history[frame].push(resident ?? -1));
-    for (const page of pages) page_history[String(page)].push(frames.indexOf(page));
   });
   const mappings = Object.fromEntries(pages.map(vpn => {
     const frame = frames.indexOf(vpn);

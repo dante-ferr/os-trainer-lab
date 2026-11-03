@@ -25,9 +25,9 @@ export interface Question {
       page_size: number;
       frame_count: number;
       page_faults: number;
-      /** VPN resident in each frame after every reference; −1 marks an empty frame. */
+      /** VPNs loaded into each frame, in order; the last entry is the current resident. */
       frames_history: number[][];
-      /** Frame mapped to each referenced VPN after every reference; −1 marks absent. */
+      /** Frames assigned to each referenced VPN, in order; −1 marks an eviction and the last entry is current. */
       page_history: Record<string, number[]>;
       mappings: Record<string, { frame: number; valid: number; }>;
     };

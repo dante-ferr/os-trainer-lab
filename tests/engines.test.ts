@@ -37,10 +37,10 @@ test('FIFO and LRU differ after a hit, using the same VA/PA offset', () => {
   assert.equal(fifo.page_faults, 4); assert.equal(lru.page_faults, 3);
   assert.equal(lru.offset, 4); assert.equal(lru.vpn, 4); assert.equal(lru.pfn, 1);
   assert.deepEqual(lru.mappings['1'], { frame: -1, valid: 0 });
-  assert.deepEqual(fifo.frames_history, [[0, 0, 0, 2, 2], [-1, 1, 1, 1, 0]]);
-  assert.deepEqual(fifo.page_history, { '0': [0, 0, 0, -1, 1], '1': [-1, 1, 1, 1, -1], '2': [-1, -1, -1, 0, 0] });
-  assert.deepEqual(lru.frames_history, [[0, 0, 0, 0, 0], [-1, 1, 1, 2, 2]]);
-  assert.deepEqual(lru.page_history, { '0': [0, 0, 0, 0, 0], '1': [-1, 1, 1, -1, -1], '2': [-1, -1, -1, 1, 1] });
+  assert.deepEqual(fifo.frames_history, [[0, 2], [1, 0]]);
+  assert.deepEqual(fifo.page_history, { '0': [0, -1, 1], '1': [1, -1], '2': [0] });
+  assert.deepEqual(lru.frames_history, [[0], [1, 2]]);
+  assert.deepEqual(lru.page_history, { '0': [0], '1': [1, -1], '2': [1] });
 });
 test('fit strategies split holes and leave failed requests unchanged', () => {
   const c = { blocks: [100, 500, 200, 300, 600], requests: [212, 417, 112, 426] };
