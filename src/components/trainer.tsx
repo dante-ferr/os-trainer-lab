@@ -81,6 +81,8 @@ export default function Trainer({ initialQuestions, initialErrors }: { initialQu
   const topic = q.meta.topic;
   const filtered = questions.filter(item => item.meta.topic === topic);
   const activeTopic = topics.find(t => t.id === topic)!;
+  const frameCountAnswer = Number(answers['paging.frame_count']);
+  const frameRows = q.paging && Number.isInteger(frameCountAnswer) && frameCountAnswer > 0 ? Math.min(frameCountAnswer, 64) : 0;
 
   function goHome() {
     setQuestion(null);
@@ -238,8 +240,10 @@ export default function Trainer({ initialQuestions, initialErrors }: { initialQu
             <div className="parameters"><span>Virtual address <strong>{q.paging.config.virtual_bits} bits</strong></span><span>Physical address <strong>{q.paging.config.physical_bits} bits</strong></span><span>Page size <strong>{2 ** q.paging.config.offset_bits} bytes</strong></span></div>
             <div className="section-title"><h3>Page reference string</h3><span>{q.paging.config.replacement} replacement</span></div><div className="reference-string">{q.paging.config.references.map((n, i) => <span key={i}>{n}</span>)}</div><p className="section-hint">References are VPNs. Start with all frames empty and use the lowest free frame first.</p>
             <div className="section-title"><h3>Decode the address space</h3></div><div className="fields paging-fields">{numeric('paging.offset', 'Offset width', 'bits')}{numeric('paging.vpn', 'VPN width', 'bits')}{numeric('paging.pfn', 'PFN width', 'bits')}{numeric('paging.page_size', 'Page size', 'bytes')}{numeric('paging.frame_count', 'Physical frames', 'frames')}{numeric('paging.page_faults', 'Total page faults', 'faults')}</div>
-            <div className="section-title"><h3>Frames table</h3><span>Value history per frame</span></div><p className="section-hint">List every VPN loaded into the frame, in order, separated by commas. Leave blank if unused. The last value is the current resident.</p>
-            <div className="mapping-table history-table"><div className="mapping-header"><span>Frame</span><span>Previous values → current</span><span>Current</span></div>{Array.from({ length: 2 ** (q.paging.config.physical_bits - q.paging.config.offset_bits) }, (_, frame) => historyRow(`frames.${frame}`, `F${frame}`, '▤'))}</div>
+            <div className="section-title"><h3>Frames table</h3><span>{frameRows > 0 ? `${frameRows} frame${frameRows === 1 ? '' : 's'}` : 'Enter physical frames first'}</span></div><p className="section-hint">Row count follows the physical frames value above. List every VPN loaded into the frame, in order, separated by commas. Leave blank if unused. The last value is the current resident.</p>
+            {frameRows > 0
+              ? <div className="mapping-table history-table"><div className="mapping-header"><span>Frame</span><span>Previous values → current</span><span>Current</span></div>{Array.from({ length: frameRows }, (_, frame) => historyRow(`frames.${frame}`, `F${frame}`, '▤'))}</div>
+              : <p className="section-hint">Set <strong>Physical frames</strong> to build the frames table.</p>}
             <div className="section-title"><h3>Page table</h3><span>Value history per VPN</span></div><p className="section-hint">List every frame assigned to the VPN, in order. Append −1 when the page is evicted. The last value is the current mapping.</p>
             <div className="mapping-table history-table"><div className="mapping-header"><span>Virtual page</span><span>Previous values → current</span><span>Current</span></div>{q.paging.pages.map(vpn => historyRow(`table.${vpn}`, `VPN ${vpn}`, '▦'))}</div>
           </>}

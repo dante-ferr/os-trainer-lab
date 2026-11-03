@@ -143,7 +143,7 @@ export function generateQuestion(topic: Topic, secondarySubject: string = subjec
       physical_bits: offset_bits + pfn_bits,
       offset_bits,
       replacement: secondarySubject as 'FIFO' | 'LRU',
-      references: Array.from({ length: randomInt(12, 21) }, () => randomInt(page_span)),
+      references: Array.from({ length: randomInt(8, 26) }, () => randomInt(page_span)),
     };
     return { meta, paging: { config, solution: page(config) } };
   }
