@@ -77,7 +77,11 @@ export function validateQuestion(input: unknown, deriveSolution = false): Questi
 export function validateAnswers(input: unknown): Answers {
   assert(input && typeof input === 'object' && !Array.isArray(input), 'Invalid answers');
   const entries = Object.entries(input);
-  assert(entries.length <= 10000 && entries.every(([key, value]) => key.length <= 100 && typeof value === 'string' && value.length <= 1000), 'Invalid answers');
+  assert(entries.length <= 10000 && entries.every(([key, value]) => {
+    if (key.length > 100 || typeof value !== 'string') return false;
+    // Queue sketches need more room than single numeric fields.
+    return value.length <= (key.startsWith('sketch.') ? 8000 : 1000);
+  }), 'Invalid answers');
   return Object.fromEntries(entries) as Answers;
 }
 

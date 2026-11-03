@@ -198,6 +198,13 @@ export default function Trainer({ initialQuestions, initialErrors }: { initialQu
     const current = historyCurrent(key);
     return <div className="mapping-row" key={key}><strong><span className="vpn-icon">{icon}</span> {label}</strong><label className={`field history-field${status(key)}`}><span className="sr-only">{`${label} value history`}</span><div className="input-wrap"><input aria-label={`${label} value history`} disabled={busy} value={answers[key] ?? ''} onChange={e => setAnswer(key, e.target.value)} placeholder="e.g. 0, 3, 5" /></div>{check && <small>{check.correct ? '✓ Correct' : `Expected: ${check.expected || '—'}`}</small>}</label><span className="history-current" title="Last value is current">{current}</span></div>;
   }
+  function queueSketch(hint: string) {
+    return <>
+      <div className="section-title"><h3>Queue sketch</h3><span>Optional helper</span></div>
+      <p className="section-hint">{hint} Not graded.</p>
+      <label className="queue-sketch"><span className="sr-only">Queue sketch</span><textarea disabled={busy} rows={5} spellCheck={false} value={answers['sketch.queue'] ?? ''} onChange={e => setAnswer('sketch.queue', e.target.value)} placeholder="Scratch space for queue order…" /></label>
+    </>;
+  }
 
   return <div className="app-shell">
     <aside className="sidebar">
@@ -231,6 +238,7 @@ export default function Trainer({ initialQuestions, initialErrors }: { initialQu
           {q.scheduling && <>
             <div className="parameters"><span><i>◷</i> Quantum <strong>{q.scheduling.config.quantum} units</strong></span><span><i>⇄</i> Overhead <strong>{q.scheduling.config.overhead} {q.scheduling.config.overhead === 1 ? 'unit' : 'units'}</strong></span><span><i>▥</i> Processes <strong>{q.scheduling.config.processes.length}</strong></span></div>
             <div className="process-table-wrap"><table className="data-table"><thead><tr><th>Process</th><th>Arrival time</th><th>Burst time</th><th>Deadline from arrival</th><th>Due at</th></tr></thead><tbody>{q.scheduling.config.processes.map((p, i) => <tr key={p.id}><td><span className={`process-dot dot-${i}`}>{p.id}</span> <strong>Process {p.id}</strong></td><td>{p.arrival}<small> units</small></td><td>{p.duration}<small> units</small></td><td>{p.deadline}<small> units</small></td><td>{absoluteDeadline(p)}<small> units</small></td></tr>)}</tbody></table></div>
+            {q.scheduling.config.algorithm === 'RR' && queueSketch('Track the ready queue as processes arrive, run, and rotate back.')}
             <div className="section-title"><h3>Build the timeline</h3><span>{q.scheduling.horizon} time units</span></div><p className="section-hint">Choose a state, then click a cell to place it. Click again to clear.</p>
             <div className="palette" role="group" aria-label="Timeline painting state">{symbols.map(s => <button key={s.key} onClick={() => setBrush(s.value)} aria-pressed={brush === s.value} className={`palette-item ${brush === s.value ? 'picked' : ''}`}><span className={`symbol ${s.className}`}>{s.value || '□'}</span>{s.label}<kbd>{s.key}</kbd></button>)}</div>
             {timeline()}<div className="grid-footer"><span>↔ Scroll to explore the full timeline</span><span>Each cell = 1 time unit</span></div>
@@ -239,6 +247,7 @@ export default function Trainer({ initialQuestions, initialErrors }: { initialQu
           {q.paging && <>
             <div className="parameters"><span>Virtual address <strong>{q.paging.config.virtual_bits} bits</strong></span><span>Physical address <strong>{q.paging.config.physical_bits} bits</strong></span><span>Page size <strong>{2 ** q.paging.config.offset_bits} bytes</strong></span></div>
             <div className="section-title"><h3>Page reference string</h3><span>{q.paging.config.replacement} replacement</span></div><div className="reference-string">{q.paging.config.references.map((n, i) => <span key={i}>{n}</span>)}</div><p className="section-hint">References are VPNs. Start with all frames empty and use the lowest free frame first.</p>
+            {queueSketch(`Track the ${q.paging.config.replacement} replacement order as you walk the reference string.`)}
             <div className="section-title"><h3>Decode the address space</h3></div><div className="fields paging-fields">{numeric('paging.offset', 'Offset width', 'bits')}{numeric('paging.vpn', 'VPN width', 'bits')}{numeric('paging.pfn', 'PFN width', 'bits')}{numeric('paging.page_size', 'Page size', 'bytes')}{numeric('paging.frame_count', 'Physical frames', 'frames')}{numeric('paging.page_faults', 'Total page faults', 'faults')}</div>
             <div className="section-title"><h3>Frames table</h3><span>{frameRows > 0 ? `${frameRows} frame${frameRows === 1 ? '' : 's'}` : 'Enter physical frames first'}</span></div><p className="section-hint">Row count follows the physical frames value above. List every VPN loaded into the frame, in order, separated by commas. Leave blank if unused. The last value is the current resident.</p>
             {frameRows > 0

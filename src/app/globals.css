@@ -127,6 +127,10 @@ kbd { font: 10px var(--mono); color: #b2bdd0; padding: 1px 4px; border: 1px soli
 .history-field { min-width: 0; }
 .history-field > span { display: none; }
 .history-current { justify-self: center; font: 14px var(--mono); color: #c5d5f3; }
+.queue-sketch { display: block; margin: 12px 0 22px; }
+.queue-sketch textarea { display: block; width: 100%; min-height: 110px; padding: 12px 14px; border: 1px dashed #52617a; border-radius: 5px; background: #1a2230; color: #d5dff0; font: 13px/1.7 var(--mono); resize: vertical; }
+.queue-sketch textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-style: solid; }
+.queue-sketch textarea::placeholder { color: #77859e; }
 .response-title { padding-top: 22px; border-top: 1px solid var(--line); }
 .fields { display: grid; gap: 13px; }
 .response-fields { grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); margin: 15px 0 25px; }
