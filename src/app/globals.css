@@ -123,6 +123,19 @@ kbd { font: 10px var(--mono); color: #b2bdd0; padding: 1px 4px; border: 1px soli
 .grid-cell.overhead { background: #4a3b24; color: #e3bf84; border-color: #6d5634; }
 .grid-cell.ready { background: #293747; color: #c0d1e8; border-color: #40536b; font-size: 24px; }
 .grid-footer { display: flex; justify-content: space-between; gap: 10px; margin-top: 9px; color: #9aa8c0; font-size: 11px; }
+.paging-history th { min-width: 42px; height: auto; padding: 6px 4px; vertical-align: bottom; }
+.paging-history th:first-child { min-width: 68px; }
+.paging-step { display: block; font-size: 10px; color: #8f9db5; }
+.paging-ref { display: block; margin-top: 2px; font-size: 13px; color: #c5d5f3; }
+.paging-input { display: block; margin: auto; }
+.paging-input input { display: block; width: 36px; height: 30px; margin: auto; padding: 0; border: 1px solid #38445b; border-radius: 3px; background: #242d3d; color: var(--ink); font: 13px var(--mono); text-align: center; -moz-appearance: textfield; }
+.paging-input input::-webkit-inner-spin-button { appearance: none; }
+.paging-input input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.paging-input.correct input { border-color: #4c9b71; background: #18372b; color: #b0e7c6; }
+.paging-input.incorrect input { border-color: #bd6b7a; background: #3c232b; color: #f5bdc7; }
+.paging-cell { width: 36px; min-width: 36px; }
+.paging-cell.empty-value { color: #8f9db5; }
+.paging-comparison { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 .response-title { padding-top: 22px; border-top: 1px solid var(--line); }
 .fields { display: grid; gap: 13px; }
 .response-fields { grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); margin: 15px 0 25px; }
@@ -221,7 +234,7 @@ kbd { font: 10px var(--mono); color: #b2bdd0; padding: 1px 4px; border: 1px soli
   .paging-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .guide-column { grid-template-columns: 1fr; }
   .guide-card { display: none; }
-  .timeline-comparison, .diff-list { grid-template-columns: minmax(0, 1fr); }
+  .timeline-comparison, .paging-comparison, .diff-list { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 700px) {
   .app-shell { display: block; }

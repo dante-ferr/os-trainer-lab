@@ -46,11 +46,15 @@ export function schedule(config: SchedulingConfig) {
   return { timeline, response_times };
 }
 
-/** Demand paging starts empty; lowest free frame first, then FIFO or LRU. */
+/** Demand paging starts empty; lowest free frame first, then FIFO or LRU.
+ * Snapshots after every reference feed the frames and page-table history grids. */
 export function page(config: PagingConfig) {
   const frame_count = 2 ** (config.physical_bits - config.offset_bits);
   const frames: (number | null)[] = Array(frame_count).fill(null);
   const loaded = new Map<number, number>(), used = new Map<number, number>();
+  const pages = [...new Set(config.references)].sort((a, b) => a - b);
+  const frames_history: number[][] = Array.from({ length: frame_count }, () => []);
+  const page_history: Record<string, number[]> = Object.fromEntries(pages.map(vpn => [String(vpn), []]));
   let page_faults = 0;
   config.references.forEach((vpn, time) => {
     if (!frames.includes(vpn)) {
@@ -63,9 +67,24 @@ export function page(config: PagingConfig) {
       frames[frame] = vpn; loaded.set(vpn, time);
     }
     used.set(vpn, time);
+    frames.forEach((resident, frame) => frames_history[frame].push(resident ?? -1));
+    for (const page of pages) page_history[String(page)].push(frames.indexOf(page));
   });
-  const mappings = Object.fromEntries([...new Set(config.references)].sort((a, b) => a - b).map(vpn => [String(vpn), { frame: frames.indexOf(vpn), valid: frames.includes(vpn) ? 1 : 0 }]));
-  return { offset: config.offset_bits, vpn: config.virtual_bits - config.offset_bits, pfn: config.physical_bits - config.offset_bits, page_size: 2 ** config.offset_bits, frame_count, page_faults, mappings };
+  const mappings = Object.fromEntries(pages.map(vpn => {
+    const frame = frames.indexOf(vpn);
+    return [String(vpn), { frame, valid: frame >= 0 ? 1 : 0 }];
+  }));
+  return {
+    offset: config.offset_bits,
+    vpn: config.virtual_bits - config.offset_bits,
+    pfn: config.physical_bits - config.offset_bits,
+    page_size: 2 ** config.offset_bits,
+    frame_count,
+    page_faults,
+    frames_history,
+    page_history,
+    mappings,
+  };
 }
 
 /** Variable partitions split in place. Next Fit resumes at the last used remainder. */

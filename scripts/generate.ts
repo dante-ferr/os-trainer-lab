@@ -17,7 +17,7 @@ if (topic === '--seed') {
   const allocation = { algorithm: 'Best Fit' as const, blocks: [100, 500, 200, 300, 600], requests: [212, 417, 112, 426] };
   const seeds: Question[] = [
     { meta: { id: 'sched_edf_01', title: 'EDF · 01', topic: 'scheduling', index: 1, description: 'Four processes. One CPU. Build the execution timeline using Earliest Deadline First and the MATA58 preemption rules.' }, scheduling: { config: scheduling, solution: schedule(scheduling) } },
-    { meta: { id: 'paging_fifo_01', title: 'FIFO · 01', topic: 'paging', index: 1, description: 'Decode the address spaces, trace demand paging, and reconstruct the final page table.' }, paging: { config: paging, solution: page(paging) } },
+    { meta: { id: 'paging_fifo_01', title: 'FIFO · 01', topic: 'paging', index: 1, description: 'Decode the address spaces, then fill the frames table and page table after every reference.' }, paging: { config: paging, solution: page(paging) } },
     { meta: { id: 'alloc_best_01', title: 'Best Fit · 01', topic: 'allocation', index: 1, description: 'Place each request in order. Split the selected free block and keep track of the space left behind.' }, allocation: { config: allocation, solution: allocate(allocation) } },
   ];
   for (const q of seeds) {

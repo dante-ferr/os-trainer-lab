@@ -29,7 +29,7 @@ For timeline cells, use `1` executing, `2` overhead, `3` ready or `4` empty, the
 
 - Overhead applies only to preemption, never natural completion. EDF uses a quantum and compares **arrival + deadline** when the CPU is assigned. A running process keeps the CPU until its quantum expires or it finishes. Deadlines are relative to arrival.
 - “Response time” means **completion − arrival**.
-- Virtual and physical addresses share the same offset width. Paging starts with empty frames; absent pages use frame `-1` and valid bit `0`.
+- Virtual and physical addresses share the same offset width. Paging starts with empty frames. After every reference, fill the frames table (VPN per frame) and page table (frame per VPN); use `-1` for empty frames and absent pages.
 - Allocations split free blocks. Next Fit resumes at the last block’s remainder. Ties choose the lowest block index.
 
 ## Commands

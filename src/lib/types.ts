@@ -16,7 +16,22 @@ export interface Question {
   meta: { id: string; title: string; topic: Topic; index?: number; description?: string; };
   attempt?: { answers: Answers; };
   scheduling?: { config: SchedulingConfig; solution: { timeline: Record<string, Cell[]>; response_times: Record<string, number>; }; };
-  paging?: { config: PagingConfig; solution: { offset: number; vpn: number; pfn: number; page_size: number; frame_count: number; page_faults: number; mappings: Record<string, { frame: number; valid: number; }>; }; };
+  paging?: {
+    config: PagingConfig;
+    solution: {
+      offset: number;
+      vpn: number;
+      pfn: number;
+      page_size: number;
+      frame_count: number;
+      page_faults: number;
+      /** VPN resident in each frame after every reference; −1 marks an empty frame. */
+      frames_history: number[][];
+      /** Frame mapped to each referenced VPN after every reference; −1 marks absent. */
+      page_history: Record<string, number[]>;
+      mappings: Record<string, { frame: number; valid: number; }>;
+    };
+  };
   allocation?: { config: AllocationConfig; solution: { assignments: number[]; remaining: number[]; }; };
 }
 export interface PublicQuestion { saved?: boolean; answers?: Answers; meta: Question['meta']; scheduling?: { config: SchedulingConfig; horizon: number; }; paging?: { config: PagingConfig; pages: number[]; }; allocation?: { config: AllocationConfig; }; }

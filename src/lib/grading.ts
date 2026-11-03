@@ -14,12 +14,17 @@ export function gradeQuestion(q: Question, answers: Answers): Grade {
     for (const [id, cells] of Object.entries(q.scheduling.solution.timeline)) cells.forEach((cell, t) => check(`cell.${id}.${t}`, `${id} at t=${t}`, cell));
     for (const [id, value] of Object.entries(q.scheduling.solution.response_times)) check(`response.${id}`, id === 'mean' ? 'Average response time' : `${id} response time`, value);
   } else if (q.paging && q.meta.topic === 'paging') {
-    const { mappings, ...metrics } = q.paging.solution;
-    for (const [key, value] of Object.entries(metrics)) check(`paging.${key}`, key.replaceAll('_', ' '), value);
-    for (const [vpn, mapping] of Object.entries(mappings)) {
-      check(`mapping.${vpn}.valid`, `VPN ${vpn}: present bit`, mapping.valid);
-      check(`mapping.${vpn}.frame`, `VPN ${vpn}: frame`, mapping.frame);
+    const { frames_history, page_history, offset, vpn, pfn, page_size, frame_count, page_faults } = q.paging.solution;
+    for (const [key, value] of Object.entries({ offset, vpn, pfn, page_size, frame_count, page_faults })) {
+      check(`paging.${key}`, key.replaceAll('_', ' '), value);
     }
+    const refs = q.paging.config.references;
+    frames_history.forEach((row, frame) => row.forEach((vpn, step) => {
+      check(`frames.${frame}.${step}`, `Frame ${frame} after ${refs[step]} (step ${step + 1})`, vpn);
+    }));
+    for (const [vpn, row] of Object.entries(page_history)) row.forEach((frame, step) => {
+      check(`table.${vpn}.${step}`, `VPN ${vpn} after ${refs[step]} (step ${step + 1})`, frame);
+    });
   } else if (q.allocation) {
     q.allocation.solution.assignments.forEach((block, i) => check(`assignment.${i}`, `Request ${i + 1} block (0-based)`, block));
     q.allocation.solution.remaining.forEach((size, i) => check(`remaining.${i}`, `Block ${i + 1} remaining KiB`, size));
